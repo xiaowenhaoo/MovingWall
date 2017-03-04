@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace Microsoft.Samples.Kinect.FaceBasics
 {
@@ -105,9 +106,34 @@ namespace Microsoft.Samples.Kinect.FaceBasics
                             wallPixels[timerCounter, i] = 200;
                         }
                     }
+
+                    string path = @"D:\MovingWall Project\MovingWallGUI\face.txt";
+
+                    if (File.Exists(path))
+                    {
+                        string[] readTxt = File.ReadAllLines(path);
+
+                        byte[,] txtPixels = new byte[35, 60];
+
+                        var res = readTxt.Select(x => x.Split(',')).ToArray();
+
+                        for (int i = 0; i < 35; i++)
+                        {
+                            for (int j = 0; j < 60; j++)
+                            {
+                                txtPixels[i, j] = (byte)(Convert.ToByte(res[i][j])*60); 
+                            }
+                        }
+
+                        Array.Copy(txtPixels, wallPixels, wallPixels.Length);
+                    }
+                    
                     break;
 
             }
+
+            //将幕墙像素转换为待显示图像数据
+            WallPixels2ImagePixels();
 
             // 显示
             //Array.Clear(depthPixels, 0, depthPixels.Length);  
@@ -120,6 +146,7 @@ namespace Microsoft.Samples.Kinect.FaceBasics
                     )
                 );
 
+            // udp send data
             UdpSendData();
 
             //周期计数

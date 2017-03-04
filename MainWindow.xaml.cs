@@ -816,8 +816,10 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
                             // If you wish to filter by reliable depth distance, uncomment the following line:
                             //// maxDepth = depthFrame.DepthMaxReliableDistance
-
-                            this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
+                            if (kinectMode)
+                            {
+                                this.ProcessDepthFrameData(depthBuffer.UnderlyingBuffer, depthBuffer.Size, depthFrame.DepthMinReliableDistance, maxDepth);
+                            }
 
                             depthFrameProcessed = true;
                         }
@@ -827,8 +829,15 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
             if (depthFrameProcessed && kinectMode)
             {
+                if (depthScreen)
+                    Array.Copy(depthPixels, imagePixels, depthPixels.Length);
+                else
+                    WallPixels2ImagePixels();
+
+                // render to display on screen
                 this.RenderPixels();
 
+                // udp send data
                 UdpSendData();
             }
 
@@ -839,33 +848,6 @@ namespace Microsoft.Samples.Kinect.FaceBasics
         /// </summary>
         private void RenderPixels()
         {
-            if (kinectMode)
-            {
-                if (faceMode)
-                {
-                    //将面部数据传送待显示图像数据
-                    WallPixels2ImagePixels();
-                }
-                else
-                {
-                    if (depthScreen)
-                    {
-                        //将人体深度数据(424*512)传送给待显示图像数据
-                        Array.Copy(depthPixels, imagePixels, depthPixels.Length);
-                    }
-                    else 
-                    {
-                        //将人体深度数据(35*60)传送给待显示图像数据
-                        WallPixels2ImagePixels();
-                    }
-                }
-            }
-            else
-            {
-                //将动画数据传递给待显示图像数据
-                WallPixels2ImagePixels();
-            }
-
             this.depthBitmap.WritePixels(
                 new Int32Rect(0, 0, this.depthBitmap.PixelWidth, this.depthBitmap.PixelHeight),
                 this.imagePixels,
@@ -890,35 +872,30 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
             if (faceMode)
             {
-                for(int i=0;i<wallHeight;i++)
+                for (int i = 0; i < wallHeight; i++)
                 {
                     for (int j = 0; j < wallWidth; j++)
                     {
                         wallPixels[i, j] = (byte)(faceWithNoMotion[i, j] * 64);
                     }
                 }
-                //Array.Copy(faceWithNoMotion, wallPixels, wallPixels.Length);
             }
-            else
+            else 
             {
+                // 将人体深度数据转换为幕墙像素数据
                 DepthFrameData2WallPixels(depthFrameData);
             }
 
-            if (depthScreen)
+            // convert depth to a visual representation
+            for (int i = 0; i < (int)(depthFrameDataSize / this.depthFrameDescription.BytesPerPixel); ++i)
             {
-                //WallPixels2ImagePixels();
-                // convert depth to a visual representation
-                for (int i = 0; i < (int)(depthFrameDataSize / this.depthFrameDescription.BytesPerPixel); ++i)
-                {
-                    // Get the depth for this pixel
-                    ushort depth = frameData[i];
+                // Get the depth for this pixel
+                ushort depth = frameData[i];
 
-                    // To convert to a byte, we're mapping the depth value to the byte range.
-                    // Values outside the reliable depth range are mapped to 0 (black).
-                    this.depthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
-                }
+                // To convert to a byte, we're mapping the depth value to the byte range.
+                // Values outside the reliable depth range are mapped to 0 (black).
+                this.depthPixels[i] = (byte)(depth >= minDepth && depth <= maxDepth ? (depth / MapDepthToByte) : 0);
             }
-            
         }
 
         /// <summary>
@@ -1033,7 +1010,7 @@ namespace Microsoft.Samples.Kinect.FaceBasics
             timerCounter = 0;
         }
 
-       
+
         private void SwitchScreen_Click(object sender, RoutedEventArgs e)
         {
             depthScreen = !depthScreen;
