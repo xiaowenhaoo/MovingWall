@@ -413,6 +413,7 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
             timer = new Timer(new TimerCallback(timerCall), null, Timeout.Infinite, 100);
 
+            timer.Change(0, 100);
             //if (this.bodyFrameReader != null)
             //{
             //    // wire handler for body frame arrival
@@ -1019,6 +1020,13 @@ namespace Microsoft.Samples.Kinect.FaceBasics
         private void FaceMode_Click(object sender, RoutedEventArgs e)
         {
             faceMode = !faceMode;
+        }
+
+        private void logo_Click(object sender, RoutedEventArgs e)
+        {
+            animation = Animation.logo;
+            timerCounter = 0;
+            bitmapToArray("test.bmp", ref wallPixels);
         }
 
 

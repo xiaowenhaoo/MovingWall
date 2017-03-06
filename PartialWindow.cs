@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Microsoft.Samples.Kinect.FaceBasics
 {
@@ -23,7 +25,8 @@ namespace Microsoft.Samples.Kinect.FaceBasics
     {
         nothing,
         byOrder,
-        circle
+        circle,
+        logo
     }
     public partial class MainWindow
     {
@@ -107,29 +110,35 @@ namespace Microsoft.Samples.Kinect.FaceBasics
                         }
                     }
 
-                    string path = @"D:\MovingWall Project\MovingWallGUI\face.txt";
+                    //string path = @"D:\MovingWall Project\MovingWallGUI\face.txt";
 
-                    if (File.Exists(path))
-                    {
-                        string[] readTxt = File.ReadAllLines(path);
+                    //if (File.Exists(path))
+                    //{
+                    //    string[] readTxt = File.ReadAllLines(path);
 
-                        byte[,] txtPixels = new byte[35, 60];
+                    //    byte[,] txtPixels = new byte[35, 60];
 
-                        var res = readTxt.Select(x => x.Split(',')).ToArray();
+                    //    var res = readTxt.Select(x => x.Split(',')).ToArray();
 
-                        for (int i = 0; i < 35; i++)
-                        {
-                            for (int j = 0; j < 60; j++)
-                            {
-                                txtPixels[i, j] = (byte)(Convert.ToByte(res[i][j])*60); 
-                            }
-                        }
+                    //    for (int i = 0; i < 35; i++)
+                    //    {
+                    //        for (int j = 0; j < 60; j++)
+                    //        {
+                    //            txtPixels[i, j] = (byte)(Convert.ToByte(res[i][j])*60); 
+                    //        }
+                    //    }
 
-                        Array.Copy(txtPixels, wallPixels, wallPixels.Length);
-                    }
+                    //    Array.Copy(txtPixels, wallPixels, wallPixels.Length);
+                    //}
                     
                     break;
+                case Animation.logo:
 
+                    //byte []image = new byte[35*60];
+                    
+                    //Array.Copy(image, imagePixels, imagePixels.Length);
+
+                    break;
             }
 
             //将幕墙像素转换为待显示图像数据
@@ -284,6 +293,30 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
                 clientSocket.SendTo(sendbuffer, remotePoint[i]);
             }            
+        }
+
+        private unsafe void bitmapToArray(string file, ref byte[,] pixels)
+        {
+            using(Bitmap image = new Bitmap(file))
+            {
+                BitmapData bitmapData = image.LockBits(new Rectangle(0,0,image.Width,image.Height),
+                                        ImageLockMode.ReadOnly,
+                                        image.PixelFormat);
+
+                byte* pointer = (byte*)bitmapData.Scan0.ToPointer();
+
+                for (int i = 0; i < pixels.GetLength(0); i++)
+                {
+                    for (int j = 0; j < pixels.GetLength(1); j++)
+                    {
+                        pixels[i,j] = *(pointer);
+                        pointer++;
+                    }
+                    //pointer += bitmapData.Stride - bitmapData.Width;
+                }
+
+                image.UnlockBits(bitmapData);
+            }
         }
     }
 }
