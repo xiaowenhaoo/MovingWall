@@ -321,6 +321,7 @@ namespace Microsoft.Samples.Kinect.FaceBasics
             SendData = new byte[7, 12, 7];
 
             //animationPixels = new byte[35 * 60];
+            distanceToCenter = new double[35, 60];
         }
 
         /// <summary>
@@ -873,13 +874,13 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
             if (faceMode)
             {
-                for (int i = 0; i < wallHeight; i++)
-                {
-                    for (int j = 0; j < wallWidth; j++)
-                    {
-                        wallPixels[i, j] = (byte)(faceWithNoMotion[i, j] * 64);
-                    }
-                }
+                //for (int i = 0; i < wallHeight; i++)
+                //{
+                //    for (int j = 0; j < wallWidth; j++)
+                //    {
+                //        wallPixels[i, j] = (byte)(faceWithNoMotion[i, j] * 64);
+                //    }
+                //}
             }
             else 
             {
@@ -1020,13 +1021,31 @@ namespace Microsoft.Samples.Kinect.FaceBasics
         private void FaceMode_Click(object sender, RoutedEventArgs e)
         {
             faceMode = !faceMode;
+            bitmapToArray(@"D:\MovingWall Project\MovingWallGUI\Images\face.bmp", ref wallPixels);
         }
 
         private void logo_Click(object sender, RoutedEventArgs e)
         {
             animation = Animation.logo;
             timerCounter = 0;
-            bitmapToArray("test.bmp", ref wallPixels);
+            bitmapToArray(@"D:\MovingWall Project\MovingWallGUI\Images\logo.bmp", ref wallPixels);
+        }
+
+        private void Ripples_Click(object sender, RoutedEventArgs e)
+        {
+            animation = Animation.ripples;
+            timerCounter = 0;
+
+            //计算每个点到中间点的距离
+            //double[,] distanceToCenter = new double[35, 60];
+
+            for (int i = 0; i < 35; i++)
+            {
+                for (int j = 0; j < 60; j++)
+                {
+                    distanceToCenter[i, j] = Math.Sqrt(Math.Pow(i - 17, 2) + Math.Pow(j - 30, 2));
+                }
+            }
         }
 
 

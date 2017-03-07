@@ -29,7 +29,7 @@
             <StatusBarItem Content="{Binding StatusText}" />
         </StatusBar>
         <Button Content="Mode" HorizontalAlignment="Left" Margin="900,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="SwitchModeButton_Click"/>
-        <Button Content="动画1" HorizontalAlignment="Left" Margin="697,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="Animaion1Button_Click"/>
+        <Button x:Name="Ripples" Content="涟漪" HorizontalAlignment="Left" Margin="697,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="Ripples_Click"/>
         <Button x:Name="SwitchScreen" Content="SwitchScreen" HorizontalAlignment="Left" Margin="589,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="80" Click="SwitchScreen_Click"/>
         <Button x:Name="FaceMode" Content="FaceMode" HorizontalAlignment="Left" Margin="799,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="FaceMode_Click"/>
         <Button x:Name="logo" Content="Logo" HorizontalAlignment="Left" Margin="474,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="logo_Click"/>
