@@ -33,5 +33,6 @@
         <Button x:Name="SwitchScreen" Content="SwitchScreen" HorizontalAlignment="Left" Margin="589,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="80" Click="SwitchScreen_Click"/>
         <Button x:Name="FaceMode" Content="FaceMode" HorizontalAlignment="Left" Margin="799,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="FaceMode_Click"/>
         <Button x:Name="logo" Content="Logo" HorizontalAlignment="Left" Margin="474,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="logo_Click"/>
+        <Button x:Name="DOF" Content="DOF" HorizontalAlignment="Left" Margin="356,660,0,0" Grid.Row="1" VerticalAlignment="Top" Width="74" Click="DOF_Click"/>
     </Grid>
 </Window>

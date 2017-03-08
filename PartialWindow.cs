@@ -27,8 +27,19 @@ namespace Microsoft.Samples.Kinect.FaceBasics
         byOrder,
         circle,
         logo,
-        ripples
+        ripples,
+        dof
     }
+
+    enum VFX : byte
+    {
+        noting,
+        flyIn,
+        splitting,
+        erase,
+        zoom
+    }
+
     public partial class MainWindow
     {
         private const int wallWidth = 60;
@@ -39,7 +50,9 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
         Animation animation = Animation.nothing;
 
-        long timerCounter = 0;
+        VFX vfx = VFX.noting;
+
+        int timerCounter = 0;
 
         //private byte[] animationPixels = null;
 
@@ -57,6 +70,8 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
         double[,] distanceToCenter = null;
 
+        byte[,] bitmapPixels = null;
+
         // 定时器回调函数
         void timerCall(object value)
         {
@@ -71,34 +86,26 @@ namespace Microsoft.Samples.Kinect.FaceBasics
                             wallPixels[timerCounter, i] = 200;
                         }
                     }
-
-                    //string path = @"D:\MovingWall Project\MovingWallGUI\face.txt";
-
-                    //if (File.Exists(path))
-                    //{
-                    //    string[] readTxt = File.ReadAllLines(path);
-
-                    //    byte[,] txtPixels = new byte[35, 60];
-
-                    //    var res = readTxt.Select(x => x.Split(',')).ToArray();
-
-                    //    for (int i = 0; i < 35; i++)
-                    //    {
-                    //        for (int j = 0; j < 60; j++)
-                    //        {
-                    //            txtPixels[i, j] = (byte)(Convert.ToByte(res[i][j])*60); 
-                    //        }
-                    //    }
-
-                    //    Array.Copy(txtPixels, wallPixels, wallPixels.Length);
-                    //}
-                    
                     break;
                 case Animation.logo:
+                    switch (vfx)
+                    {
+                        case VFX.flyIn:
+                            vfxFlyIn();
+                            break;
+                        case VFX.splitting:
+                            vfxSplitting();
+                            break;
+                        case VFX.erase:
+                            vfxErase();
+                            break;
+                        case VFX.zoom:
 
-
+                            break;
+                    }
                     break;
                 case Animation.ripples:
+                    
                     makeRipples();
 
                     break;
@@ -273,7 +280,8 @@ namespace Microsoft.Samples.Kinect.FaceBasics
                 {
                     for (int j = 0; j < pixels.GetLength(1); j++)
                     {
-                        pixels[i,j] = *(pointer);
+                        pixels[i, j] = (byte)(255-*(pointer));
+                        //pixels[i, j] = (byte)(*(pointer) < 25 ? 0 : 255);
                         pointer++;
                     }
                     //pointer += bitmapData.Stride - bitmapData.Width;
@@ -284,7 +292,7 @@ namespace Microsoft.Samples.Kinect.FaceBasics
         }
 
         //制造涟漪
-        void makeRipples()
+        private void makeRipples()
         {
             double radius = (timerCounter * 1)%30;
             double radius2 = ((timerCounter * 1) - 15) % 30;
@@ -323,6 +331,73 @@ namespace Microsoft.Samples.Kinect.FaceBasics
             }
         }
 
+        //飞入特效
+        private void vfxFlyIn()
+        {
+            if (timerCounter < 35)
+            {
+                for (int i = 0; i < timerCounter; i++)
+                {
+                    for (int j = 0; j < 60; j++)
+                    {
+                        wallPixels[i + 35 - timerCounter - 1, j] = bitmapPixels[i, j];
+                    }
+                }
+            } 
+        }
+
+        //劈裂特效
+        private void vfxSplitting()
+        {
+            if (timerCounter < 60 / 2)
+            {
+                for (int index = 0; index <= timerCounter; index++)
+                {
+                    for (int i = 0; i < 35; i++)
+                    {
+                        wallPixels[i, index] = bitmapPixels[i, index];
+                        wallPixels[i, 60 - index - 1] = bitmapPixels[i, 60 - index - 1];
+                    }
+                }
+            } 
+        }
+
+        //擦除特效
+        private void vfxErase()
+        {
+            if (timerCounter < 35)
+            {
+                for (int i = 0; i < timerCounter; i++)
+                {
+                    for (int j = 0; j < 60; j++)
+                    {
+                        wallPixels[i + 35 - timerCounter - 1, j] = bitmapPixels[i + 35 - timerCounter - 1, j];
+                    }
+                }
+            } 
+        }
 
     }
 }
+
+
+//string path = @"D:\MovingWall Project\MovingWallGUI\face.txt";
+
+//if (File.Exists(path))
+//{
+//    string[] readTxt = File.ReadAllLines(path);
+
+//    byte[,] txtPixels = new byte[35, 60];
+
+//    var res = readTxt.Select(x => x.Split(',')).ToArray();
+
+//    for (int i = 0; i < 35; i++)
+//    {
+//        for (int j = 0; j < 60; j++)
+//        {
+//            txtPixels[i, j] = (byte)(Convert.ToByte(res[i][j])*60); 
+//        }
+//    }
+
+//    Array.Copy(txtPixels, wallPixels, wallPixels.Length);
+//}

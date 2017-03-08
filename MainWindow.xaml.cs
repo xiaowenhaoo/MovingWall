@@ -322,6 +322,8 @@ namespace Microsoft.Samples.Kinect.FaceBasics
 
             //animationPixels = new byte[35 * 60];
             distanceToCenter = new double[35, 60];
+
+            bitmapPixels = new byte[35, 60];
         }
 
         /// <summary>
@@ -1002,6 +1004,8 @@ namespace Microsoft.Samples.Kinect.FaceBasics
             else
             {
                 timer.Change(0, 100);
+                timerCounter = 0;
+                animation = Animation.nothing;
             }
         }
 
@@ -1027,8 +1031,9 @@ namespace Microsoft.Samples.Kinect.FaceBasics
         private void logo_Click(object sender, RoutedEventArgs e)
         {
             animation = Animation.logo;
+            vfx = VFX.erase;
             timerCounter = 0;
-            bitmapToArray(@"D:\MovingWall Project\MovingWallGUI\Images\logo.bmp", ref wallPixels);
+            bitmapToArray(@"D:\MovingWall Project\MovingWallGUI\Images\motus.bmp", ref bitmapPixels);
         }
 
         private void Ripples_Click(object sender, RoutedEventArgs e)
@@ -1046,6 +1051,13 @@ namespace Microsoft.Samples.Kinect.FaceBasics
                     distanceToCenter[i, j] = Math.Sqrt(Math.Pow(i - 17, 2) + Math.Pow(j - 30, 2));
                 }
             }
+        }
+
+        private void DOF_Click(object sender, RoutedEventArgs e)
+        {
+            animation = Animation.dof;
+            timerCounter = 0;
+            bitmapToArray(@"D:\MovingWall Project\MovingWallGUI\Images\dof.bmp", ref wallPixels);
         }
 
 
